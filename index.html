@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Business Copilot</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,Arial,sans-serif;
+  background:#0b0f14;
+  color:#f5f7fa;
+}
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:28px 18px;
+}
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:35px;
+}
+.logo{
+  font-size:22px;
+  font-weight:800;
+}
+.badge{
+  background:#17251d;
+  color:#65e6a1;
+  padding:7px 12px;
+  border-radius:20px;
+  font-size:12px;
+}
+.hero{
+  margin-bottom:25px;
+}
+.hero h1{
+  font-size:38px;
+  margin:0 0 10px;
+}
+.hero p{
+  color:#9da7b3;
+  margin:0;
+}
+.upload{
+  border:1px dashed #3b4654;
+  border-radius:18px;
+  padding:28px;
+  text-align:center;
+  background:#10161e;
+  margin:25px 0;
+}
+.upload input{
+  margin-top:15px;
+}
+button{
+  border:0;
+  border-radius:10px;
+  padding:12px 18px;
+  background:#65e6a1;
+  color:#07120c;
+  font-weight:700;
+  cursor:pointer;
+}
+.cards{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+.card{
+  background:#111821;
+  border:1px solid #202a36;
+  border-radius:16px;
+  padding:20px;
+}
+.label{
+  color:#8f9aa8;
+  font-size:13px;
+}
+.value{
+  font-size:27px;
+  font-weight:800;
+  margin-top:8px;
+}
+.score{
+  margin-top:25px;
+  background:#111821;
+  border:1px solid #202a36;
+  border-radius:18px;
+  padding:25px;
+}
+.score-number{
+  font-size:54px;
+  font-weight:900;
+}
+.insights{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin-top:15px;
+}
+.insight{
+  background:#111821;
+  border:1px solid #202a36;
+  border-radius:16px;
+  padding:20px;
+}
+.insight h3{
+  margin-top:0;
+}
+.muted{
+  color:#9da7b3;
+  line-height:1.6;
+}
+@media(max-width:800px){
+  .cards{grid-template-columns:repeat(2,1fr)}
+  .insights{grid-template-columns:1fr}
+  .hero h1{font-size:30px}
+}
+@media(max-width:450px){
+  .cards{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+  <div class="logo">◈ AI Business Copilot</div>
+  <div class="badge">MVP • Free</div>
+</header>
+
+<section class="hero">
+  <h1>Understand your business in seconds.</h1>
+  <p>Upload your sales CSV and get instant business intelligence.</p>
+</section>
+
+<section class="upload">
+  <strong>Upload your sales data</strong>
+  <p class="muted">CSV columns: Product, Sales, Cost, Quantity</p>
+  <input type="file" id="file" accept=".csv">
+</section>
+
+<section class="cards">
+
+<div class="card">
+  <div class="label">Revenue</div>
+  <div class="value" id="revenue">$0</div>
+</div>
+
+<div class="card">
+  <div class="label">Estimated Profit</div>
+  <div class="value" id="profit">$0</div>
+</div>
+
+<div class="card">
+  <div class="label">Units Sold</div>
+  <div class="value" id="units">0</div>
+</div>
+
+<div class="card">
+  <div class="label">Profit Margin</div>
+  <div class="value" id="margin">0%</div>
+</div>
+
+</section>
+
+<section class="score">
+  <div class="label">BUSINESS HEALTH SCORE</div>
+  <div class="score-number" id="score">--</div>
+  <p class="muted" id="scoreText">
+    Upload your CSV to analyse your business.
+  </p>
+</section>
+
+<h2>Business Insights</h2>
+
+<section class="insights">
+
+<div class="insight">
+  <h3>📈 Performance</h3>
+  <p class="muted" id="performance">
+    Waiting for your data.
+  </p>
+</div>
+
+<div class="insight">
+  <h3>💰 Profitability</h3>
+  <p class="muted" id="profitInsight">
+    Waiting for your data.
+  </p>
+</div>
+
+<div class="insight">
+  <h3>⚠️ Opportunity</h3>
+  <p class="muted" id="opportunity">
+    Waiting for your data.
+  </p>
+</div>
+
+</section>
+
+</div>
+
+<script>
+
+const fileInput = document.getElementById("file");
+
+fileInput.addEventListener("change", function(e){
+
+  const file = e.target.files[0];
+
+  if(!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function(event){
+
+    const text = event.target.result.trim();
+
+    const lines = text.split(/\r?\n/);
+
+    if(lines.length < 2){
+      alert("CSV must contain a header and at least one row.");
+      return;
+    }
+
+    const headers = lines[0].split(",").map(x => x.trim().toLowerCase());
+
+    const productIndex = headers.indexOf("product");
+    const salesIndex = headers.indexOf("sales");
+    const costIndex = headers.indexOf("cost");
+    const quantityIndex = headers.indexOf("quantity");
+
+    if(salesIndex === -1 || costIndex === -1){
+      alert("CSV needs Sales and Cost columns.");
+      return;
+    }
+
+    let revenue = 0;
+    let cost = 0;
+    let units = 0;
+
+    for(let i=1;i<lines.length;i++){
+
+      const row = lines[i].split(",");
+
+      const sales = parseFloat(row[salesIndex]) || 0;
+      const itemCost = parseFloat(row[costIndex]) || 0;
+      const quantity = quantityIndex >= 0
+        ? parseFloat(row[quantityIndex]) || 0
+        : 1;
+
+      revenue += sales;
+      cost += itemCost;
+      units += quantity;
+    }
+
+    const profit = revenue - cost;
+    const margin = revenue > 0
+      ? (profit / revenue) * 100
+      : 0;
+
+    let score = 50;
+
+    if(margin >= 30) score += 30;
+    else if(margin >= 20) score += 20;
+    else if(margin >= 10) score += 10;
+    else score -= 10;
+
+    if(revenue > 0) score += 10;
+
+    score = Math.max(0, Math.min(100, score));
+
+    document.getElementById("revenue").textContent =
+      "$" + revenue.toFixed(2);
+
+    document.getElementById("profit").textContent =
+      "$" + profit.toFixed(2);
+
+    document.getElementById("units").textContent =
+      units.toLocaleString();
+
+    document.getElementById("margin").textContent =
+      margin.toFixed(1) + "%";
+
+    document.getElementById("score").textContent =
+      score + "/100";
+
+    document.getElementById("scoreText").textContent =
+      score >= 80
+      ? "Your business looks healthy. Keep monitoring profitability."
+      : score >= 60
+      ? "Your business has potential, but there are areas to improve."
+      : "Your business needs attention, especially around profitability.";
+
+    document.getElementById("performance").textContent =
+      "You generated $" + revenue.toFixed(2) +
+      " in recorded sales across " + units + " units.";
+
+    document.getElementById("profitInsight").textContent =
+      "Estimated profit is $" + profit.toFixed(2) +
+      " with a " + margin.toFixed(1) + "% margin.";
+
+    document.getElementById("opportunity").textContent =
+      margin < 20
+      ? "Your biggest opportunity may be improving product margins."
+      : "Your margins look promising. Focus next on increasing repeat sales.";
+
+  };
+
+  reader.readAsText(file);
+
+});
+
+</script>
+
+</body>
+</html>
