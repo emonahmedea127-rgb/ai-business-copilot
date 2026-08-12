@@ -319,11 +319,64 @@ fileInput.addEventListener("change", function(e){
   const canvas = document.getElementById("salesChart");
 const ctx = canvas.getContext("2d");
 
-ctx.clearRect(0, 0, canvas.width, canvas.height);
+const chartWidth = canvas.width = canvas.offsetWidth * 2;
+const chartHeight = canvas.height = 600;
 
-ctx.font = "16px Arial";
-ctx.fillText("Sales data loaded successfully", 20, 40);
+ctx.clearRect(0, 0, chartWidth, chartHeight);
 
+const chartData = [
+  {name: "Laptop", value: 120000},
+  {name: "Phone", value: 80000},
+  {name: "Headphones", value: 30000},
+  {name: "Keyboard", value: 15000},
+  {name: "Mouse", value: 10000},
+  {name: "Monitor", value: 60000}
+];
+
+const maxValue = Math.max(...chartData.map(item => item.value));
+
+const barWidth = chartWidth / chartData.length * 0.55;
+const gap = chartWidth / chartData.length;
+
+ctx.font = "24px Arial";
+ctx.textAlign = "center";
+
+chartData.forEach((item, index) => {
+
+  const barHeight = (item.value / maxValue) * 400;
+
+  const x =
+    index * gap +
+    (gap - barWidth) / 2;
+
+  const y = chartHeight - barHeight - 80;
+
+  ctx.fillStyle = "#65e6a1";
+
+  ctx.fillRect(
+    x,
+    y,
+    barWidth,
+    barHeight
+  );
+
+  ctx.fillStyle = "#ffffff";
+
+  ctx.fillText(
+    "$" + (item.value / 1000) + "k",
+    x + barWidth / 2,
+    y - 15
+  );
+
+  ctx.fillStyle = "#9da7b3";
+
+  ctx.fillText(
+    item.name,
+    x + barWidth / 2,
+    chartHeight - 35
+  );
+
+});
 });
 
 </script>
