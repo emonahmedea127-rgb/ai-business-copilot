@@ -1,0 +1,6 @@
+{
+  "name": "AI Business Copilot",
+  "description": "Production-ready SaaS ecommerce intelligence platform connecting stores to revenue insights, unit economics, margin analysis, and AI-powered copilot recommendations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
