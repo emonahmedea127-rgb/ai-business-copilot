@@ -1,0 +1,63 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User account profile and preferences",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "role": { "type": "string" },
+        "isVerified": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "email", "createdAt"]
+    },
+    "UserStore": {
+      "title": "UserStore",
+      "description": "Connected ecommerce store configured by user",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "platform": { "type": "string" },
+        "currency": { "type": "string" },
+        "domain": { "type": "string" },
+        "connectedAt": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "userId", "name", "platform", "connectedAt"]
+    },
+    "UserActivityLog": {
+      "title": "UserActivityLog",
+      "description": "Historical audit and activity log items for the user",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "action": { "type": "string" },
+        "details": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["id", "userId", "action", "timestamp"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile documents keyed by Firebase Auth UID"
+    },
+    "users/{userId}/stores/{storeId}": {
+      "schema": "UserStore",
+      "description": "Stores connected by the user"
+    },
+    "users/{userId}/activity_logs/{logId}": {
+      "schema": "UserActivityLog",
+      "description": "Activity logs created by user interactions"
+    }
+  }
+}
