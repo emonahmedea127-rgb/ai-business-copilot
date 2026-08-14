@@ -2,9 +2,20 @@ import express, { Request, Response, Router } from 'express';
 import { db } from '../db';
 import { processAICopilotQuery } from '../ai/copilotEngine';
 import { generateExecutiveReport } from '../reports/generator';
+import { handleStripeWebhook } from '../stripe/webhookHandler';
 
 export function createApiRouter(): Router {
   const router = express.Router();
+
+  // 1. Stripe Webhook endpoint - Raw body parser MUST be mounted before express.json()
+  // for Stripe cryptographic signature verification
+  router.post(
+    '/stripe/webhook',
+    express.raw({ type: ['application/json', 'application/octet-stream', '*/*'] }),
+    handleStripeWebhook
+  );
+
+  // 2. Standard JSON body parser for all other REST API endpoints
   router.use(express.json());
 
   // Safe wrapper helper

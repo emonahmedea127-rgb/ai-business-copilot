@@ -10,7 +10,6 @@ function apiServerPlugin(): Plugin {
     name: 'api-server-plugin',
     configureServer(server) {
       const app = express();
-      app.use(express.json());
       app.use('/api', createApiRouter());
       server.middlewares.use(app);
     },
